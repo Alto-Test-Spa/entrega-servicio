@@ -40,7 +40,7 @@ function complete(state: EntregaState, def: ServiceDefinition): EntregaState {
 
 const base = (id: string) => ({ def: getService(id), state: initialState(id, new Date(2026, 8, 17, 10, 15, 0)) })
 
-export const FIXTURE_NAMES = ['ranco', 'minimal', 'stress'] as const
+export const FIXTURE_NAMES = ['ranco', 'minimal', 'stress', 'glass', 'seals'] as const
 export type FixtureName = (typeof FIXTURE_NAMES)[number]
 
 export function getFixture(name: string): { state: EntregaState; def: ServiceDefinition } {
@@ -76,6 +76,20 @@ export function getFixture(name: string): { state: EntregaState; def: ServiceDef
           values: { ...completed.values, 'tests.conclusion': 'U'.repeat(300) },
           photos: Array.from({ length: 6 }, (_, i) => photo(i + 1, `Registro ${i + 1}`)),
           findings: [finding(1, 6, 'critical')],
+        },
+      }
+    }
+    case 'glass':
+    case 'seals': {
+      const { def, state } = base(name)
+      const done = complete(state, def)
+      return {
+        def,
+        state: {
+          ...done,
+          values: name === 'glass' ? { ...done.values, 'equipment.fact3': 'Carro colgante · N.º de serie CC-204' } : done.values,
+          photos: Array.from({ length: 4 }, (_, i) => photo(i + 1, `Registro ${i + 1}`)),
+          findings: [finding(1, 2, 'critical'), finding(2, 1, 'observation')],
         },
       }
     }

@@ -4,7 +4,7 @@ import { spawn, spawnSync } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 const PORT = 4173
-const FIXTURES = ['ranco', 'minimal', 'stress']
+const FIXTURES = ['ranco', 'minimal', 'stress', 'glass', 'seals']
 const PY = process.env.PY ?? '.venv-gates/bin/python'
 mkdirSync('out', { recursive: true })
 

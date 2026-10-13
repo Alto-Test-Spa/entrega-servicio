@@ -110,3 +110,15 @@ describe.each(SERVICE_LIST.map((d) => [d.id, d] as const))('servicio %s completo
     expect(blocks).toEqual([])
   })
 })
+
+describe('carro colgante', () => {
+  it('bloquea hasta reemplazar el N.º de serie del equipo', () => {
+    const glass = getService('glass')
+    const s = fillTemplate(initialState('glass', new Date(2026, 8, 17)), glass)
+    expect(s.accessMode).toBe('suspended_platform')
+    const issues = validate(s, glass)
+    expect(issues.some((i) => i.level === 'block' && i.message.includes('Texto de plantilla'))).toBe(true)
+    const fixed = { ...s, values: { ...s.values, 'equipment.fact3': 'Carro colgante · N.º de serie CC-204' } }
+    expect(validate(fixed, glass).filter((i) => i.level === 'block')).toEqual([])
+  })
+})
