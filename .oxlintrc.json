@@ -1,0 +1,1 @@
+{ "ignorePatterns": ["dist", "dist-test", "out", "node_modules"] }
