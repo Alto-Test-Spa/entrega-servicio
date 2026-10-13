@@ -113,6 +113,14 @@ interface EntregaState {
 
 El estado se guarda tal cual como `doc` opaco en el sobre del Worker (`{ code, client, date, doc }`).
 
+**Ajustes decididos al planificar (2026-10-13):**
+- `SharedData` incluye `contact: string` (contacto del cliente, opcional, se precarga desde la cotización o el levantamiento).
+- `EntregaState.tables: Record<string, string[][]>` guarda las filas de cada sección de tipo tabla (se copian de la definición al crear), para poder agregar y quitar filas.
+- Los campos de ficha (`FactItem`) llevan `hint` (ayuda de pantalla, no es contenido del documento) y no traen valor por defecto cuando dependen del trabajo: un campo vacío bloquea la emisión en vez de usar un marcador entre corchetes.
+- `NormativeItem` lleva `id` para no duplicar una norma que aparece en el servicio y en el bloque de altura.
+- El folio es de solo lectura en la app.
+- Tamaño de hoja: Carta vertical fija; el contenido fluye y más información da más hojas (decidido 2026-10-13, sin Oficio ni alto a medida).
+
 ## 6. Definiciones de servicio y tipos de sección
 
 ```ts
