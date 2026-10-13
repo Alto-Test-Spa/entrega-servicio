@@ -46,7 +46,11 @@ export default function EntregaEditor({ onAuthExpired }: { onAuthExpired: () => 
       <Toolbar state={state} serviceLabel={def.label} syncState={syncState} onNew={() => setConfirmNew(true)} onLoad={loadReport} />
       <div className="editor-layout">
         <SidePanel>
-          <DataPanel state={state} onChange={(patch) => update((s) => ({ ...s, shared: { ...s.shared, ...patch } }))} />
+          <DataPanel
+            state={state}
+            onChange={(patch) => update((s) => ({ ...s, shared: { ...s.shared, ...patch } }))}
+            onMerge={(merge) => update((s) => ({ ...s, shared: merge(s.shared) }))}
+          />
           <section className="box" aria-labelledby="h-mod">
             <h2 id="h-mod">Modalidad de acceso</h2>
             <div className="seg">
