@@ -1,6 +1,6 @@
 # Informe de Entrega de Servicio — diseño
 
-**Fecha:** 2026-10-13 · **Autor del pedido:** Matías Quiroz · **Estado:** borrador para revisión
+**Fecha:** 2026-10-13 · **Autor del pedido:** Matías Quiroz · **Estado:** aprobado el 2026-10-13 · implementado según el plan 2026-10-13-entrega-servicio.md
 **Maqueta aprobada en lo visual (v2):** https://claude.ai/artifact/G7KfCvHLTsqkr5DqBWCuci
 
 ## 1. Objetivo
