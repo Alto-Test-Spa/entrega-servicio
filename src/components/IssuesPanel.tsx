@@ -15,11 +15,12 @@ export function IssuesPanel({ issues, issued, onIssue }: Props) {
   const blocked = hasBlocks(issues)
 
   function goTo(sectionId?: string) {
+    setOpen(false) // la lista no se queda tapando el documento
     if (sectionId) document.querySelector(`[data-sheet="${sectionId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
-    <div className="gate no-print">
+    <div className={`gate no-print ${open ? 'gate--open' : ''}`}>
       <div className="gate-row">
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <span className="eyebrow">Antes de emitir</span>

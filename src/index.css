@@ -392,6 +392,7 @@
   .gate-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
   .pill { font: 500 11px var(--font-mono); padding: 3px 8px; background: #e8eae6; }
   .pill--bad { color: #a53a14; } .pill--warn { color: #9a6a00; } .pill--ok { color: #2f6f4f; }
+  .gate--open { position: static; }
   .issues { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 12.5px; max-height: 220px; overflow: auto; }
   .issues li { display: flex; gap: 8px; align-items: baseline; }
   .issues a { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
