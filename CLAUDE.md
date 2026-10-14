@@ -16,7 +16,7 @@ Vite 8 + React 19 + TS + Tailwind v4, `reicon-react`, Worker compartido `altotes
 Si un servicio necesita un tipo de sección nuevo: el tipo en `services/types.ts` + un renderizador en `components/sections/` + su caso en `lib/fields.ts` (una vez para todos).
 
 ## Decisiones de Matías (no revertir sin pedirlo)
-- Oportunidades comerciales solo informadas en el documento, sin automatización. `commercialOpportunity` queda estructurado para exportar después.
+- Oportunidades comerciales: dato interno, NO sale en el PDF ni en la portada (Camilo, 2026-10-14; la hoja de hallazgos es para el cliente). Siguen en el editor como casilla `no-print`. `commercialOpportunity` queda estructurado para exportar después.
 - Vigencias = texto; vencida avisa, nunca bloquea.
 - Máximo 6 fotos en total en el registro del servicio y 6 en total en hallazgos. La foto de portada no cuenta.
 - Sin registro de firmas ni tabla de revisiones: sin hoja de «Emisión» (2026-10-13): quien emite (una sola persona) va en la portada junto al folio, siempre Rev. 0; la última sección es «Hallazgos fuera de alcance».

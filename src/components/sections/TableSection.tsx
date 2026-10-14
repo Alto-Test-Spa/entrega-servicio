@@ -21,7 +21,7 @@ export function TableSection({ section, ctx }: { section: TableDef; ctx: RenderC
       <table className="t t--fixed">
         <thead>
           <tr>
-            {section.columns.map((c) => (<th key={c.label} style={c.width ? { width: c.width } : undefined}>{c.label}</th>))}
+            {section.columns.map((c) => (<th key={c.label} style={{ ...(c.width ? { width: c.width } : {}), ...(c.align ? { textAlign: c.align } : {}) }}>{c.label}</th>))}
             {!readOnly && <th className="no-print" style={{ width: '28px' }} />}
           </tr>
         </thead>
@@ -29,7 +29,7 @@ export function TableSection({ section, ctx }: { section: TableDef; ctx: RenderC
           {rows.map((row, r) => (
             <tr key={r} data-row>
               {padRow(row, section.columns.length).map((cell, c) => (
-                <td key={c}>
+                <td key={c} style={section.columns[c].align ? { textAlign: section.columns[c].align } : undefined}>
                   {section.columns[c].derive ? (
                     <span className="derived">{dueLabel(state.shared.executionDate, row[0] ?? '') || '—'}</span>
                   ) : (

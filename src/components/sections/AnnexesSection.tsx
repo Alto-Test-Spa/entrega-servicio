@@ -27,11 +27,11 @@ export function AnnexesSection({ section, ctx }: { section: AnnexesDef; ctx: Ren
               <td><EditableText value={a.title} onChange={(v) => patch(i, { title: v })} placeholder="Nombre del documento" readOnly={readOnly} /></td>
               <td>
                 {readOnly ? (
-                  <span className="chip">{a.delivery === 'separate' ? 'Aparte' : 'Incluido'}</span>
+                  <span className="chip">{a.delivery === 'separate' ? 'Independiente' : 'Incluido'}</span>
                 ) : (
-                  <button type="button" className="chip chip-btn" title="Clic para cambiar: incluido en este informe o documento aparte"
+                  <button type="button" className="chip chip-btn" title="Clic para cambiar: incluido en este informe o documento independiente"
                     onClick={() => patch(i, { delivery: a.delivery === 'separate' ? 'included' : 'separate' })}>
-                    {a.delivery === 'separate' ? 'Aparte' : 'Incluido'}
+                    {a.delivery === 'separate' ? 'Independiente' : 'Incluido'}
                   </button>
                 )}
               </td>
@@ -62,7 +62,7 @@ export function AnnexesSection({ section, ctx }: { section: AnnexesDef; ctx: Ren
           + Agregar anexo
         </button>
       )}
-      <p className="hint">Incluido = va dentro de este informe · Aparte = se entrega como documento independiente.</p>
+      <p className="hint">Incluido = va dentro de este informe · Independiente = se entrega como documento independiente.</p>
       <p className="hint no-print">La vigencia es texto libre. Una fecha vencida avisa antes de emitir, pero no bloquea.</p>
     </>
   )

@@ -1,6 +1,7 @@
 export interface TableColumn {
   label: string
   width?: string // p. ej. '12%'
+  align?: 'center' // alineación de la columna (cifras cortas, p. ej. cantidades)
   derive?: 'dueDate' // columna calculada (no editable): mes y año del hito de la primera columna, desde la fecha de ejecución
   example?: string // ayuda de pantalla en la celda vacía («Ej. …»); no es contenido del documento
 }

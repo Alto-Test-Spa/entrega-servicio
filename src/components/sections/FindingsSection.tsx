@@ -17,7 +17,6 @@ export function FindingsSection({ ctx }: { ctx: RenderCtx }) {
   const F = state.findings
   const total = countFindingPhotos(F)
   const risk = F.filter((f) => f.immediateRisk).length
-  const opp = F.filter((f) => f.commercialOpportunity).length
 
   const patch = (id: string, p: Partial<Finding>) =>
     update((s) => ({ ...s, findings: s.findings.map((f) => (f.id === id ? { ...f, ...p } : f)) }))
@@ -28,7 +27,6 @@ export function FindingsSection({ ctx }: { ctx: RenderCtx }) {
       <div className="sum">
         <span><b>{F.length}</b> hallazgo{F.length === 1 ? '' : 's'}</span>
         <span><b>{risk}</b> con riesgo inmediato</span>
-        <span><b>{opp}</b> oportunidad{opp === 1 ? '' : 'es'} comercial{opp === 1 ? '' : 'es'}</span>
         <span className="no-print"><b>{total} / {MAX_PHOTOS}</b> fotos · máximo en esta sección</span>
       </div>
 
@@ -38,7 +36,6 @@ export function FindingsSection({ ctx }: { ctx: RenderCtx }) {
             <div className="tags">
               <span className="sevb" style={{ background: SEVERITY_COLOR[f.severity] }}>{SEVERITY_LEVELS.find((l) => l.value === f.severity)?.label}</span>
               {f.immediateRisk && <span className="chip chip--signal">Riesgo inmediato</span>}
-              {f.commercialOpportunity && <span className="chip chip--signal">Oportunidad comercial</span>}
             </div>
             {!readOnly && (
               <div className="finding-controls no-print">
@@ -46,7 +43,7 @@ export function FindingsSection({ ctx }: { ctx: RenderCtx }) {
                   {SEVERITY_LEVELS.map((l) => (<option key={l.value} value={l.value}>{l.label}</option>))}
                 </select>
                 <label><input type="checkbox" checked={f.immediateRisk} onChange={(e) => patch(f.id, { immediateRisk: e.target.checked })} /> Riesgo inmediato</label>
-                <label><input type="checkbox" checked={f.commercialOpportunity} onChange={(e) => patch(f.id, { commercialOpportunity: e.target.checked })} /> Oportunidad comercial</label>
+                <label><input type="checkbox" checked={f.commercialOpportunity} onChange={(e) => patch(f.id, { commercialOpportunity: e.target.checked })} /> Oportunidad comercial (solo interno, no sale en el PDF)</label>
                 <button type="button" className="sbtn" onClick={() => update((s) => ({ ...s, findings: s.findings.filter((x) => x.id !== f.id) }))}>Quitar hallazgo</button>
               </div>
             )}

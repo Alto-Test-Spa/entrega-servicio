@@ -37,5 +37,5 @@ export const findingsSection = (): SectionDef => ({
 })
 
 export const SCOPE_COLUMNS: TableColumn[] = [
-  { label: 'Ítem', width: '9%' }, { label: 'Actividad ejecutada' }, { label: 'Cantidad', width: '16%' }, { label: 'Observación', width: '22%' },
+  { label: 'Ítem', width: '9%' }, { label: 'Actividad ejecutada' }, { label: 'Cantidad', width: '16%', align: 'center' }, { label: 'Observación', width: '22%' },
 ]

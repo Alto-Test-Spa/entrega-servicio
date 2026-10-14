@@ -32,7 +32,7 @@ export const anchors: ServiceDefinition = {
         { label: 'Componente', width: '24%' },
         { label: 'Marca / modelo', width: '24%', example: 'SafeLink · SteelLink Blind Fastener' },
         { label: 'Especificación', example: 'Sistema de fijación mecánica sobre perfilería metálica' },
-        { label: 'Cantidad', width: '12%', example: '14' },
+        { label: 'Cantidad', width: '12%', align: 'center', example: '14' },
       ],
       rows: [
         ['Anclaje mecánico', '', '', ''],
@@ -65,7 +65,7 @@ export const anchors: ServiceDefinition = {
       rows: [['01', '', '']],
     },
     {
-      id: 'layout', title: 'Layout de puntos / As-built', group: 'service', kind: 'layout',
+      id: 'layout', title: 'Layout de puntos', group: 'service', kind: 'layout',
       instruction: 'Sube el plano, layout o croquis final con la ubicación real y la codificación de los elementos intervenidos.',
       legend: 'Plano de ubicación y codificación de los puntos intervenidos en {{asset}}.',
     },

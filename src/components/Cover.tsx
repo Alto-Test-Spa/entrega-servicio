@@ -9,7 +9,6 @@ const ORDER = ['critical', 'needs_action', 'observation', 'compliant'] as const
 export function Cover({ state, def }: { state: EntregaState; def: ServiceDefinition }) {
   const s = state.shared
   const counts = ORDER.map((sev) => ({ sev, n: state.findings.filter((f) => f.severity === sev).length })).filter((c) => c.n > 0)
-  const opp = state.findings.filter((f) => f.commercialOpportunity).length
   const hasPhoto = !!state.coverPhoto
   return (
     <section className="sheet cover" data-sheet="cover">
@@ -28,13 +27,15 @@ export function Cover({ state, def }: { state: EntregaState; def: ServiceDefinit
             <div><dt>Activo</dt><dd>{s.asset || '—'}</dd></div>
             <div><dt>Ejecución</dt><dd>{s.executionDate || '—'}</dd></div>
             <div><dt>Folio</dt><dd className="mono">{state.code}</dd></div>
+            {s.quoteCode && <div><dt>Cotización</dt><dd className="mono">{s.quoteCode}</dd></div>}
+            {s.surveyCode && <div><dt>Levantamiento</dt><dd className="mono">{s.surveyCode}</dd></div>}
             <div><dt>Emitido por</dt><dd><b>{s.issuerName || '—'}</b><br />{s.issuerRole || '—'}</dd></div>
           </dl>
           <div className="band">
             {counts.length ? counts.map((c) => <i key={c.sev} style={{ flex: c.n, background: SEVERITY_COLOR[c.sev] }} />) : <i style={{ flex: 1, background: SEVERITY_COLOR.compliant }} />}
           </div>
           <p className="legend">
-            {state.findings.length} hallazgo{state.findings.length === 1 ? '' : 's'} fuera de alcance · {opp} oportunidad{opp === 1 ? '' : 'es'} comercial{opp === 1 ? '' : 'es'}
+            {state.findings.length} hallazgo{state.findings.length === 1 ? '' : 's'} fuera de alcance
           </p>
         </div>
       </div>
