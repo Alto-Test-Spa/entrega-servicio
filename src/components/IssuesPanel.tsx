@@ -29,7 +29,7 @@ export function IssuesPanel({ issues, issued, onIssue }: Props) {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button type="button" className="toolbar-btn toolbar-btn--ghost" onClick={() => setOpen((v) => !v)}>{open ? 'Ocultar detalle' : 'Ver detalle'}</button>
-          <button type="button" className="toolbar-btn" disabled={blocked || issued} onClick={onIssue}>{issued ? 'Emitido' : 'Emitir informe'}</button>
+          <button type="button" className="toolbar-btn" disabled={blocked || issued} onClick={onIssue}>{issued ? 'Emitido' : 'Marcar como emitido'}</button>
         </div>
       </div>
       {open && (
@@ -44,7 +44,7 @@ export function IssuesPanel({ issues, issued, onIssue }: Props) {
         </ul>
       )}
       <p className="hint" style={{ margin: '8px 0 0' }}>
-        {blocked ? 'Es un borrador: se puede seguir redactando e imprimir, pero no emitir.' : issued ? 'Si editas algo, el informe vuelve a borrador.' : 'Sin bloqueos: el informe se puede emitir.'}
+        {blocked ? 'Es un borrador: puedes seguir redactando e imprimir el PDF (sale con sello BORRADOR). El sello EMITIDO solo se puede poner cuando no queden bloqueos.' : issued ? 'Informe emitido: el PDF sale con el sello EMITIDO · REV. 0. Si editas algo, vuelve a borrador.' : 'Sin bloqueos: puedes marcarlo como emitido para que el PDF lleve el sello EMITIDO · REV. 0 (imprimir sirve en cualquier momento).'}
       </p>
     </div>
   )
