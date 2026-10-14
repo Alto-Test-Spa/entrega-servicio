@@ -2,6 +2,8 @@
 export const keys = {
   fact: (sectionId: string, index: number) => `${sectionId}.fact${index}`,
   conclusion: (sectionId: string) => `${sectionId}.conclusion`,
+  title: (sectionId: string) => `${sectionId}.title`,
+  column: (sectionId: string, index: number) => `${sectionId}.col${index}`,
   summary: 'identification.summary',
   note: (sectionId: string) => `${sectionId}.note`,
   legend: (sectionId: string) => `${sectionId}.legend`,

@@ -49,11 +49,11 @@ function sectionFields(section: SectionDef, state: EntregaState, ctx: Record<str
     case 'table': {
       const rows = state.tables[section.id] ?? section.rows
       const noteField: Field[] = section.note === undefined ? [] : [
-        { ...base, label: `${section.title} · nota`, value: val(keys.note(section.id), section.note), required: true, validity: false, write: writeValue(keys.note(section.id)) },
+        { ...base, label: `${section.title} · nota`, value: val(keys.note(section.id), section.note), required: !section.noteOptional, validity: false, write: writeValue(keys.note(section.id)) },
       ]
       return [...noteField, ...rows.flatMap((row, r) =>
         padRow(row, section.columns.length).flatMap((cell, c) => section.columns[c].derive ? [] : [{
-          ...base, label: `${section.title} · fila ${r + 1}`, value: interpolate(cell, ctx), required: true, validity: false,
+          ...base, label: `${section.title} · fila ${r + 1}`, value: interpolate(cell, ctx), required: !section.columns[c].optional, validity: false,
           write: (s: EntregaState, v: string): EntregaState => ({
             ...s,
             tables: { ...s.tables, [section.id]: (s.tables[section.id] ?? section.rows).map((rr, ri) => (ri === r ? padRow(rr, section.columns.length).map((cc, ci) => (ci === c ? v : cc)) : rr)) },

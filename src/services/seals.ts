@@ -4,15 +4,14 @@ import {
 } from './common'
 import type { ServiceDefinition } from './types'
 
-// Borrador a validar por Alto Test. La duración de la prueba de riego NO se inventa: queda vacía
-// hasta que se fije con AAMA 501.2 u otro procedimiento propio.
+// Borrador a validar por Alto Test. Sin duración de prueba inventada: el método y el resultado los escribe quien ejecutó.
 export const seals: ServiceDefinition = {
   id: 'seals',
   label: 'Reposición de sellos',
   codePrefix: 'AT-R-SEL',
   title: 'Reposición de sellos de fachada',
   intro:
-    'Registrar la reposición de sellos ejecutada en {{asset}}: ubicación, tipo de sellante, longitudes intervenidas y pruebas de estanqueidad posteriores.',
+    'Registrar la reposición de sellos ejecutada en {{asset}}: ubicación, tipo de sellante, longitudes intervenidas y verificación de filtraciones posterior.',
   sections: [
     identificationSection(),
     scopeSection(SCOPE_COLUMNS, [
@@ -22,23 +21,31 @@ export const seals: ServiceDefinition = {
     ]),
     {
       id: 'replaced', title: 'Sellos repuestos', group: 'service', kind: 'table',
-      columns: [{ label: 'Ubicación', example: 'Junta vertical, cara norte, piso 5' }, { label: 'Tipo de sello', width: '26%', example: 'Silicona estructural' }, { label: 'Longitud', width: '14%', example: '12 m' }, { label: 'Curado / control', width: '24%', example: 'Revisado a las 24 h' }],
-      rows: [['', '', '', '']],
+      // Muchas veces no se lleva un registro tan exacto: solo el sector es obligatorio; el resto se
+      // completa si existe, y las columnas se pueden renombrar.
+      columns: [
+        { label: 'Sector / fachada', example: 'Cara norte, piso 5' },
+        { label: 'Desde', width: '13%', optional: true, example: 'Piso 5' },
+        { label: 'Hasta', width: '13%', optional: true, example: 'Piso 8' },
+        { label: 'Longitud total', width: '15%', align: 'center', optional: true, example: '120 m' },
+        { label: 'Tipo de sello', width: '20%', optional: true, example: 'Silicona estructural' },
+      ],
+      rows: [['', '', '', '', '']],
+      note: '', noteLabel: 'Observaciones del trabajo', noteOptional: true,
     },
     {
-      id: 'watertightness', title: 'Pruebas de estanqueidad', group: 'service', kind: 'facts',
+      id: 'watertightness', title: 'Verificación de filtraciones', group: 'service', kind: 'facts',
       facts: [
         { label: 'Método', value: '', hint: 'Por ejemplo riego controlado sobre la junta' },
-        { label: 'Duración por tramo', value: '', hint: 'Según el protocolo definido (AAMA 501.2 u otro)' },
-        { label: 'Tramos evaluados', value: '', hint: 'Cantidad de tramos probados' },
-        { label: 'Resultado', value: '', hint: 'Resultado observado en cada tramo' },
+        { label: 'Sectores verificados', value: '', hint: 'Dónde se probó' },
+        { label: 'Resultado', value: '', hint: 'Qué se observó' },
       ],
-      conclusionHint: 'Resultado de las pruebas una vez cumplido el tiempo de curado',
+      conclusionHint: 'Resultado de la verificación una vez cumplido el tiempo de curado',
     },
     photosSection(),
     maintenanceSection([
       ['6 meses', 'Inspección visual de sellos', 'Revisión de adherencia y grietas.'],
-      ['12 meses', 'Prueba de estanqueidad', 'Muestreo de juntas críticas.'],
+      ['12 meses', 'Verificación de filtraciones', 'Muestreo de juntas críticas.'],
     ]),
     annexesSection([
       { letter: 'A', title: 'Ficha técnica y lote del sellante', hasValidity: true, delivery: 'included' },

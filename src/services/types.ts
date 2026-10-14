@@ -2,6 +2,7 @@ export interface TableColumn {
   label: string
   width?: string // p. ej. '12%'
   align?: 'center' // alineación de la columna (cifras cortas, p. ej. cantidades)
+  optional?: boolean // la celda puede quedar vacía sin bloquear (registros que no siempre se llevan con exactitud)
   derive?: 'dueDate' // columna calculada (no editable): mes y año del hito de la primera columna, desde la fecha de ejecución
   example?: string // ayuda de pantalla en la celda vacía («Ej. …»); no es contenido del documento
 }
@@ -35,7 +36,7 @@ interface SectionBase {
 export type SectionDef = SectionBase &
   (
     | { kind: 'identification' }
-    | { kind: 'table'; columns: TableColumn[]; rows: string[][]; note?: string; noteLabel?: string; notePlain?: boolean }
+    | { kind: 'table'; columns: TableColumn[]; rows: string[][]; note?: string; noteLabel?: string; notePlain?: boolean; noteOptional?: boolean }
     | { kind: 'facts'; facts: FactItem[]; conclusionHint: string }
     | { kind: 'layout'; instruction: string; legend: string }
     | { kind: 'photos' }

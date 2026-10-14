@@ -103,3 +103,13 @@ describe.each(SERVICE_LIST.map((d) => [d.id, d] as const))('servicio %s completo
     expect(blocks).toEqual([])
   })
 })
+
+describe('registros flexibles (sellos)', () => {
+  const seals = getService('seals')
+  it('solo el sector es obligatorio en «Sellos repuestos»; el resto puede quedar vacío', () => {
+    const s = fillTemplate(initialState('seals', new Date(2026, 8, 17)), seals)
+    const rows = [['Cara norte', '', '', '', '']]
+    const v = { ...s, tables: { ...s.tables, replaced: rows }, values: { ...s.values, 'replaced.note': '' } }
+    expect(validate(v, seals).filter((i) => i.level === 'block')).toEqual([])
+  })
+})

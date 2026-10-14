@@ -21,7 +21,9 @@ export function TableSection({ section, ctx }: { section: TableDef; ctx: RenderC
       <table className="t t--fixed">
         <thead>
           <tr>
-            {section.columns.map((c) => (<th key={c.label} style={{ ...(c.width ? { width: c.width } : {}), ...(c.align ? { textAlign: c.align } : {}) }}>{c.label}</th>))}
+            {section.columns.map((c, ci) => (<th key={ci} style={{ ...(c.width ? { width: c.width } : {}), ...(c.align ? { textAlign: c.align } : {}) }}>
+              <EditableText value={c.label} onChange={(v) => setValue(ctx, keys.column(section.id, ci), v)} placeholder={c.label} readOnly={readOnly} />
+            </th>))}
             {!readOnly && <th className="no-print" style={{ width: '28px' }} />}
           </tr>
         </thead>
