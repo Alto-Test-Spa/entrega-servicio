@@ -1,6 +1,7 @@
-import type { EntregaState, Finding, SharedData } from '../types'
+import type { AnnexRow, EntregaState, Finding, SharedData } from '../types'
 import type { SectionDef, ServiceDefinition } from '../services/types'
-import { normativeItems } from '../services/normative'
+import { padRow } from './tables'
+import { annexLetter, effectiveAnnexes, setAnnexes } from './annexes'
 import { buildContext, interpolate } from './interpolate'
 import { keys } from './keys'
 import { activeSections } from './sections'
@@ -33,31 +34,32 @@ export function effectiveValue(state: EntregaState, key: string, fallback: strin
 
 const writeValue = (key: string) => (s: EntregaState, v: string): EntregaState => ({ ...s, values: { ...s.values, [key]: v } })
 
-function sectionFields(section: SectionDef, state: EntregaState, def: ServiceDefinition, ctx: Record<string, string>): Field[] {
+function sectionFields(section: SectionDef, state: EntregaState, ctx: Record<string, string>): Field[] {
   const base = { sectionId: section.id }
   const val = (key: string, fallback: string) => effectiveValue(state, key, fallback, ctx)
   switch (section.kind) {
     case 'identification':
-      return SHARED_FIELDS.map(({ key, label, required }) => ({
-        ...base, label, value: state.shared[key], required, validity: false,
-        write: (s, v) => ({ ...s, shared: { ...s.shared, [key]: v } }),
-      }))
-    case 'normative':
-      return normativeItems(def, state.accessMode).map((n, i) => ({
-        ...base, label: `Norma ${i + 1}`, value: val(keys.norm(state.accessMode, i), n.text), required: true, validity: false,
-        write: writeValue(keys.norm(state.accessMode, i)),
-      }))
+      return [
+        ...SHARED_FIELDS.map(({ key, label, required }): Field => ({
+          ...base, label, value: state.shared[key], required, validity: false,
+          write: (s, v) => ({ ...s, shared: { ...s.shared, [key]: v } }),
+        })),
+        { ...base, label: 'Resumen del resultado', value: val(keys.summary, ''), required: true, validity: false, write: writeValue(keys.summary) },
+      ]
     case 'table': {
       const rows = state.tables[section.id] ?? section.rows
-      return rows.flatMap((row, r) =>
-        row.map((cell, c) => ({
+      const noteField: Field[] = section.note === undefined ? [] : [
+        { ...base, label: `${section.title} · nota`, value: val(keys.note(section.id), section.note), required: true, validity: false, write: writeValue(keys.note(section.id)) },
+      ]
+      return [...noteField, ...rows.flatMap((row, r) =>
+        padRow(row, section.columns.length).flatMap((cell, c) => section.columns[c].derive ? [] : [{
           ...base, label: `${section.title} · fila ${r + 1}`, value: interpolate(cell, ctx), required: true, validity: false,
           write: (s: EntregaState, v: string): EntregaState => ({
             ...s,
-            tables: { ...s.tables, [section.id]: (s.tables[section.id] ?? section.rows).map((rr, ri) => (ri === r ? rr.map((cc, ci) => (ci === c ? v : cc)) : rr)) },
+            tables: { ...s.tables, [section.id]: (s.tables[section.id] ?? section.rows).map((rr, ri) => (ri === r ? padRow(rr, section.columns.length).map((cc, ci) => (ci === c ? v : cc)) : rr)) },
           }),
-        })),
-      )
+        }]),
+      )]
     }
     case 'facts':
       return [
@@ -75,11 +77,14 @@ function sectionFields(section: SectionDef, state: EntregaState, def: ServiceDef
         write: (s, v) => ({ ...s, photos: s.photos.map((pp, pi) => (pi === i ? { ...pp, caption: v } : pp)) }),
       }))
     case 'annexes':
-      return section.annexes.flatMap((a, i) =>
-        a.hasValidity
-          ? [{ ...base, label: `Anexo ${a.letter} · vigencia`, value: val(keys.annexValidity(section.id, i), ''), required: true, validity: true, write: writeValue(keys.annexValidity(section.id, i)) }]
-          : [],
-      )
+      return effectiveAnnexes(state, section).flatMap((a, i): Field[] => {
+        const patch = (p: Partial<AnnexRow>) => (s: EntregaState): EntregaState =>
+          setAnnexes(s, section.id, effectiveAnnexes(s, section).map((x, xi) => (xi === i ? { ...x, ...p } : x)))
+        const title: Field = { ...base, label: `Anexo ${annexLetter(i)} · documento`, value: a.title, required: true, validity: false, write: (s, v) => patch({ title: v })(s) }
+        return a.hasValidity
+          ? [title, { ...base, label: `Anexo ${annexLetter(i)} · vigencia`, value: a.validity, required: true, validity: true, write: (s, v) => patch({ validity: v })(s) }]
+          : [title]
+      })
     case 'findings':
       return state.findings.flatMap((f, i) => {
         const patch = (p: Partial<Finding>) => (s: EntregaState): EntregaState => ({ ...s, findings: s.findings.map((ff, fi) => (fi === i ? { ...ff, ...p } : ff)) })
@@ -92,13 +97,11 @@ function sectionFields(section: SectionDef, state: EntregaState, def: ServiceDef
         }))
         return [text('ubicación', f.location, 'location'), text('descripción', f.description, 'description'), text('recomendación', f.recommendation, 'recommendation'), ...caps]
       })
-    case 'issuance':
-      return []
   }
 }
 
 // Todo lo editable de las secciones VISIBLES. Lo oculto no se valida ni cuenta.
 export function collectFields(state: EntregaState, def: ServiceDefinition): Field[] {
   const ctx = buildContext(state)
-  return activeSections(def, state.hiddenSections).flatMap(({ section }) => sectionFields(section, state, def, ctx))
+  return activeSections(def, state.hiddenSections).flatMap(({ section }) => sectionFields(section, state, ctx))
 }

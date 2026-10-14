@@ -8,7 +8,7 @@ interface Props {
   readOnly?: boolean
 }
 
-// Rejilla de fotos grandes (3 columnas, 4:3): la misma para el registro fotográfico y para los
+// Rejilla de fotos grandes (2 columnas, 4:3): la misma para el registro fotográfico y para los
 // hallazgos, porque la foto es la evidencia y es lo que hace vendible el informe.
 export function PhotoGrid({ photos, onCaption, onRemove, readOnly }: Props) {
   return (
@@ -22,7 +22,7 @@ export function PhotoGrid({ photos, onCaption, onRemove, readOnly }: Props) {
             )}
           </div>
           <figcaption className="cap">
-            <EditableText value={p.caption} onChange={(v) => onCaption(p.id, v)} placeholder="Descripción de la foto" readOnly={readOnly} />
+            <EditableText value={p.caption} onChange={(v) => onCaption(p.id, v)} placeholder="Descripción de la foto" multiline readOnly={readOnly} />
           </figcaption>
         </figure>
       ))}

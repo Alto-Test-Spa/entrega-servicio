@@ -355,6 +355,19 @@
   .editable:focus { background: rgb(194 73 31 / 10%); box-shadow: inset 2px 0 0 var(--color-signal); }
   .editable:empty::before { content: attr(data-ph); color: var(--color-signal); font-family: var(--font-mono); font-size: 10px; }
   .editable--block { display: block; }
+  /* Con formato: el HTML manda, no los saltos de línea del texto. */
+  .editable--rich { white-space: normal; }
+  .editable--rich ul, .editable--rich ol { margin: 2px 0; padding-left: 1.4em; }
+  .editable--rich ul { list-style: disc; }
+  .editable--rich ol { list-style: decimal; }
+  .editable--rich li { margin: 1px 0; }
+  .editable--rich b { font-weight: 700; }
+
+  /* Barra de formato mientras se edita un texto con formato. */
+  .format-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: flex; gap: 6px; align-items: center; padding: 6px 8px; background: var(--color-ink); color: #fff; box-shadow: 0 8px 24px -8px rgb(0 0 0 / 50%); }
+  .format-bar button { font: 500 12px var(--font-mono); color: #fff; background: transparent; border: 1px solid rgb(255 255 255 / 35%); padding: 3px 9px; cursor: pointer; }
+  .format-bar button:hover { background: rgb(255 255 255 / 15%); }
+  .format-hint { font: 400 10px var(--font-mono); color: rgb(255 255 255 / 65%); margin-left: 6px; }
 
   /* ═════════════════ Editor ═════════════════ */
   .editor-layout { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 20px; align-items: start; padding: 16px; }
@@ -404,12 +417,33 @@
   .sec-eyebrow { font: 500 10px var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-steel); margin: 0 0 6px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .sheet-title { font: 600 clamp(19px, 3vw, 24px) / 1.2 var(--font-sans); margin: 0 0 14px; text-wrap: balance; }
   .sheet h4 { font: 500 10px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-steel); margin: 18px 0 6px; }
-  .sheet p { margin: 0 0 8px; text-align: justify; }
+  .sheet p { margin: 0 0 8px; }
+  /* Todo el texto del documento va justificado; solo lo corto y rotulado (títulos, etiquetas,
+     encabezados de tabla, fichas) se queda a la izquierda. */
+  .sheet-body { text-align: justify; hyphens: auto; }
+  .sheet-body .sec-eyebrow, .sheet-body .sheet-title, .sheet-body h4, .sheet-body table.t th, .sheet-body .facts dt, .sheet-body .spec dt, .sheet-body .kpi,
+  .sheet-body .chip, .sheet-body .mono, .sheet-body .cap-row { text-align: left; hyphens: none; }
+  .sheet-body.cover-body { text-align: left; hyphens: none; }
   .lead { font-size: 13.5px; }
   .mono { font-family: var(--font-mono); }
   .chip { font: 500 9px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--color-steel-pale); padding: 1px 6px; color: var(--color-steel); }
   .chip--signal { border-color: var(--color-signal); color: var(--color-signal); }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  /* Ficha: etiqueta a la izquierda, valor a la derecha. La usan Identificación y las hojas de resultados. */
+  .spec { margin: 0 0 4px; border-top: 1.5px solid var(--color-ink); }
+  .spec > div { display: grid; grid-template-columns: 30% minmax(0, 1fr); gap: 14px; padding: 7px 0; border-bottom: 1px solid #c9cfcc; }
+  .spec dt { font: 500 9.5px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-steel); padding-top: 3px; }
+  .spec dd { margin: 0; overflow-wrap: anywhere; }
+  /* Panel destacado: el resultado y la conclusión son lo que más se lee. */
+  .callout { margin: 0 0 14px; padding: 10px 14px 12px; background: #e9ece9; border-left: 4px solid var(--color-signal); }
+  .callout h4 { margin: 0 0 6px; }
+  /* Cifras grandes. */
+  .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 6px; }
+  .kpi { border: 1px solid #c9cfcc; padding: 9px 12px 10px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .kpi-label { font: 500 9px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-steel); text-align: left; }
+  .kpi-n { font: 600 28px / 1.05 var(--font-sans); }
+  .kpi-n--text { font-size: 18px; text-transform: capitalize; }
+  .kpi-sub { font-size: 11px; color: var(--color-steel); text-align: left; hyphens: none; }
   .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px 22px; margin: 0; }
   .facts > div { border-top: 1px solid var(--color-ink); padding-top: 5px; min-width: 0; }
   .facts dt { font: 500 9.5px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-steel); margin: 0 0 2px; }
@@ -422,7 +456,7 @@
   .toc { list-style: none; margin: 0; padding: 0; }
   .toc li { display: grid; grid-template-columns: 3ch minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; border-bottom: 1px dotted var(--color-steel-pale); align-items: baseline; }
   .toc .num { font: 500 12px var(--font-mono); color: var(--color-signal); }
-  .photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+  .photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
   .photo { margin: 0; min-width: 0; }
   .photo-frame { position: relative; aspect-ratio: 4 / 3; background: repeating-linear-gradient(135deg, #dfe3e1 0 8px, #eaedeb 8px 16px); border: 1px solid #c9cfcc; }
   .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -507,14 +541,24 @@ body { overflow-wrap: anywhere; }
   .sheet { display: block; width: auto; max-width: none; min-height: 0; box-shadow: none; background: #fff; font-size: 12px; break-before: page; }
   .sheet-body { padding: 0; }
   .editable:hover, .editable:focus { background: none; box-shadow: none; }
-  .photos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .photos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sheet-title { break-after: avoid; }
   .sec-eyebrow, .sheet h4 { break-after: avoid; }
   table.t thead { display: table-header-group; }
-  table.t tr, .photo, .finding-head, .legend-text { break-inside: avoid; }
+  table.t tr, .photo, .finding-head, .legend-text, .spec > div, .callout, .kpi { break-inside: avoid; }
   .finding-head { break-after: avoid; }
   .layout-img { max-height: 7in; }
   .sheet.cover { page: cover; break-before: auto; break-after: page; height: 11in; overflow: hidden; background: var(--color-ink); }
   .cover-content { min-height: 0; height: 11in; box-sizing: border-box; padding: 0.9in 0.9in 0.8in; }
   .cover-body { height: 11in; }
 }
+
+  .chip-btn { background: transparent; cursor: pointer; font-family: var(--font-mono); }
+  .link-btn { border: 0; background: transparent; color: var(--color-steel); font: 400 10px var(--font-mono); text-decoration: underline; cursor: pointer; padding: 0 0 0 6px; }
+
+  /* Nota bajo un cuadro: en negrita y enmarcada, aparte de los ítems. */
+  .note-box { margin-top: 12px; padding: 8px 12px; border: 1px solid var(--color-ink); border-left: 4px solid var(--color-signal); font-weight: 600; break-inside: avoid; }
+
+  .hint--warn { color: var(--color-signal); }
+  .note-box--plain { font-weight: 400; }
+  .derived { font-weight: 600; }

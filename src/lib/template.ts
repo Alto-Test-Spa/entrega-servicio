@@ -17,7 +17,6 @@ export function initialState(serviceId: string, now: Date = new Date()): Entrega
   return {
     code: generateCode(now),
     serviceId,
-    accessMode: def.defaultAccessMode,
     shared: { ...emptyShared(), ...DEFAULT_ISSUER, executionDate: todayDate(now) },
     hiddenSections: [],
     values: {},

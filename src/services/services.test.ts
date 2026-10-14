@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { KNOWN_VARS } from '../lib/interpolate'
-import { normativeItems } from './normative'
 import { SERVICE_LIST, SERVICES, getService } from './index'
 import type { SectionDef } from './types'
 
@@ -21,33 +20,27 @@ describe.each(SERVICE_LIST.map((d) => [d.id, d] as const))('definición %s', (_i
     const ids = def.sections.map((s) => s.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
-  it('empieza con la identificación fija y termina con la emisión fija', () => {
+  it('empieza con la identificación fija y termina con los hallazgos', () => {
     expect(def.sections[0]).toMatchObject({ kind: 'identification', fixed: true })
-    expect(def.sections.at(-1)).toMatchObject({ kind: 'issuance', fixed: true })
+    expect(def.sections.at(-1)?.kind).toBe('findings')
   })
-  it('deja los hallazgos justo antes de la emisión', () => {
-    expect(def.sections.at(-2)?.kind).toBe('findings')
+  it('no tiene hoja de emisión: quien emite va en la portada', () => {
+    expect(def.sections.some((s) => (s.kind as string) === 'issuance')).toBe(false)
   })
   it('incluye las secciones comunes', () => {
     const kinds = def.sections.map((s) => s.kind)
-    for (const k of ['normative', 'table', 'photos', 'annexes', 'findings'] as const) expect(kinds).toContain(k)
+    for (const k of ['table', 'photos', 'annexes', 'findings'] as const) expect(kinds).toContain(k)
   })
   it('cada fila de tabla tiene tantas celdas como columnas', () => {
     for (const s of def.sections) if (s.kind === 'table') for (const r of s.rows) expect(r.length).toBe(s.columns.length)
   })
   it('solo usa variables conocidas en sus textos', () => {
-    const all = [def.title, def.intro, ...def.normative.map((n) => n.text), ...def.sections.flatMap(texts)]
+    const all = [def.title, def.intro, ...def.sections.flatMap(texts)]
     for (const t of all) for (const m of t.matchAll(VAR_RE)) expect(KNOWN_VARS).toContain(m[1])
   })
   it('ningún texto base trae marcadores entre corchetes', () => {
-    const all = [def.title, def.intro, ...def.normative.map((n) => n.text), ...def.sections.flatMap(texts)]
+    const all = [def.title, def.intro, ...def.sections.flatMap(texts)]
     for (const t of all) expect(t).not.toMatch(/\[[^\]]{2,}\]/)
-  })
-  it('la normativa nunca repite una norma', () => {
-    for (const mode of ['ground', 'suspended_platform', 'rope'] as const) {
-      const ids = normativeItems(def, mode).map((n) => n.id)
-      expect(new Set(ids).size).toBe(ids.length)
-    }
   })
 })
 
@@ -62,20 +55,13 @@ describe('anclajes (referencia: Dossier de Ranco)', () => {
   const def = SERVICES.anchors
   it('arma las secciones del dossier en orden', () => {
     expect(def.sections.map((s) => s.id)).toEqual([
-      'identification', 'normative', 'scope', 'tests', 'layout', 'photos', 'maintenance', 'annexes', 'findings', 'issuance',
+      'identification', 'scope', 'components', 'tests', 'execution', 'layout', 'photos', 'maintenance', 'annexes', 'findings',
     ])
   })
-  it('tiene las cuatro normas validadas del proyecto', () => {
-    expect(def.normative.filter((n) => n.status === 'validated').map((n) => n.id)).toEqual([
-      'en-795', 'en-365', 'nch-1258', 'ds-594',
-    ])
-  })
-  it('a nivel de piso no suma normativa de altura; en cuerdas sí, sin duplicar NCh 1258', () => {
-    expect(normativeItems(def, 'ground').length).toBe(4)
-    const rope = normativeItems(def, 'rope')
-    expect(rope.length).toBeGreaterThan(4)
-    expect(rope.filter((n) => n.id === 'nch-1258')).toHaveLength(1)
-    expect(rope.find((n) => n.id === 'nch-1258')?.status).toBe('validated')
+  it('el alcance remite a la propuesta técnica en una nota, no como ítem', () => {
+    const scope = def.sections.find((s) => s.id === 'scope')
+    expect(scope?.kind === 'table' && scope.note).toMatch(/propuesta técnica/)
+    expect(scope?.kind === 'table' && scope.rows).toHaveLength(4)
   })
   it('el plan de mantención parte de 6 meses y alterna inspección y ensayo', () => {
     const plan = def.sections.find((s) => s.id === 'maintenance')

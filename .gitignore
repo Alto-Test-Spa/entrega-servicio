@@ -6,3 +6,4 @@ out
 .superpowers
 *.local
 .env
+local/

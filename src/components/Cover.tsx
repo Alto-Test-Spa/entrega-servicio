@@ -17,7 +17,7 @@ export function Cover({ state, def }: { state: EntregaState; def: ServiceDefinit
         <div className="cover-veil" style={{ background: hasPhoto ? veilBackground(state.coverVeil) : 'none' }} aria-hidden="true" />
         <div className="cover-fade" aria-hidden="true" />
         <div className="cover-content">
-          <Wordmark tone="signal" textClassName="text-[16px] text-paper" />
+          <div><Wordmark tone="signal" textClassName="text-[16px] text-paper" /></div>
           <div className="cover-spacer" />
           <p className="cover-eyebrow">Informe de Entrega de Servicio</p>
           <h2 className="cover-title">{def.title}</h2>
@@ -28,6 +28,7 @@ export function Cover({ state, def }: { state: EntregaState; def: ServiceDefinit
             <div><dt>Activo</dt><dd>{s.asset || '—'}</dd></div>
             <div><dt>Ejecución</dt><dd>{s.executionDate || '—'}</dd></div>
             <div><dt>Folio</dt><dd className="mono">{state.code}</dd></div>
+            <div><dt>Emitido por</dt><dd><b>{s.issuerName || '—'}</b><br />{s.issuerRole || '—'}</dd></div>
           </dl>
           <div className="band">
             {counts.length ? counts.map((c) => <i key={c.sev} style={{ flex: c.n, background: SEVERITY_COLOR[c.sev] }} />) : <i style={{ flex: 1, background: SEVERITY_COLOR.compliant }} />}

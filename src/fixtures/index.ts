@@ -3,6 +3,7 @@ import type { ServiceDefinition } from '../services/types'
 import { getService } from '../services'
 import { initialState } from '../lib/template'
 import { generateId } from '../lib/code'
+import { effectiveAnnexes } from '../lib/annexes'
 
 // Imagen de relleno en SVG (se imprime como cualquier <img>): evita depender de archivos.
 const svg = (label: string, w = 1200, h = 900) =>
@@ -26,8 +27,10 @@ function complete(state: EntregaState, def: ServiceDefinition): EntregaState {
       s.facts.forEach((f, i) => { if (f.value === '') values[`${s.id}.fact${i}`] = f.validity ? 'N.º 4521 · vigente hasta 12.03.2027' : `Dato de ${f.label}` })
       values[`${s.id}.conclusion`] = 'Resultado conforme respecto del criterio de aceptación definido para el proyecto.'
     }
+    if (s.kind === 'table' && s.note === '') values[`${s.id}.note`] = 'Fachadas limpias, sin residuos de producto ni marcas visibles al cierre del trabajo.'
     if (s.kind === 'annexes') s.annexes.forEach((a, i) => { if (a.hasValidity) values[`${s.id}.annex${i}.validity`] = 'vigente hasta 15.01.2027' })
   }
+  values['identification.summary'] = 'Resultado del servicio de prueba: trabajo ejecutado y verificado conforme al criterio de aceptación del proyecto.'
   const tables = Object.fromEntries(
     Object.entries(state.tables).map(([id, rows]) => [id, rows.map((r, ri) => r.map((c, ci) => (c === '' ? `Fila ${ri + 1} dato ${ci + 1}` : c)))]),
   )
@@ -40,6 +43,9 @@ function complete(state: EntregaState, def: ServiceDefinition): EntregaState {
 
 const base = (id: string) => ({ def: getService(id), state: initialState(id, new Date(2026, 8, 17, 10, 15, 0)) })
 
+// «dossier» solo existe en la máquina de quien tiene `local/dossier-ranco.ts` (datos reales, fuera de git).
+const local = import.meta.glob<{ buildDossier: (s: EntregaState) => EntregaState }>('../../local/dossier-ranco.ts', { eager: true })
+
 export const FIXTURE_NAMES = ['ranco', 'minimal', 'stress', 'glass', 'seals'] as const
 export type FixtureName = (typeof FIXTURE_NAMES)[number]
 
@@ -47,18 +53,29 @@ export function getFixture(name: string): { state: EntregaState; def: ServiceDef
   switch (name) {
     case 'ranco': {
       const { def, state } = base('anchors')
+      const annexesDef = def.sections.find((x) => x.kind === 'annexes')
+      if (annexesDef?.kind !== 'annexes') throw new Error('anchors sin anexos')
       return {
         def,
         state: {
           ...complete(state, def),
           coverPhoto: svg('Foto de portada', 1800, 2400),
-          photos: Array.from({ length: 6 }, (_, i) => photo(i + 1, `Registro ${i + 1}`)),
+          // Con formato: negrita, lista y salto de línea; más un anexo agregado a mano.
+          values: { ...complete(state, def).values, 'tests.conclusion': '<b>Resultado conforme.</b><br>Se verificó:<ul><li>carga de prueba en cada anclaje</li><li>estado de soldaduras y placas</li></ul>' },
+          annexes: { annexes: [...effectiveAnnexes(complete(state, def), annexesDef), { title: 'Informe de ensayo de laboratorio', hasValidity: false, validity: '' }] },
+          photos: Array.from({ length: 6 }, (_, i) => photo(i + 1, i === 0 ? '<b>Anclaje A-12</b><br>Placa y perno tras la prueba:<ul><li>sin deformación</li><li>sin corrosión</li></ul>' : `Registro ${i + 1}`)),
           findings: [finding(1, 2, 'needs_action'), finding(2, 1, 'critical'), finding(3, 3, 'observation')],
         },
       }
     }
+    case 'dossier': {
+      const mod = Object.values(local)[0]
+      if (!mod) throw new Error('Falta local/dossier-ranco.ts')
+      const { def, state } = base('anchors')
+      return { def, state: mod.buildDossier(state) }
+    }
     case 'minimal': {
-      // Todo lo ocultable oculto: queda portada, índice, identificación y emisión.
+      // Todo lo ocultable oculto: queda portada, índice e identificación.
       const { def, state } = base('anchors')
       const hidden = def.sections.filter((s) => !s.fixed).map((s) => s.id)
       return { def, state: { ...complete(state, def), hiddenSections: hidden } }
@@ -87,7 +104,7 @@ export function getFixture(name: string): { state: EntregaState; def: ServiceDef
         def,
         state: {
           ...done,
-          values: name === 'glass' ? { ...done.values, 'equipment.fact3': 'Carro colgante · N.º de serie CC-204' } : done.values,
+          values: done.values,
           photos: Array.from({ length: 4 }, (_, i) => photo(i + 1, `Registro ${i + 1}`)),
           findings: [finding(1, 2, 'critical'), finding(2, 1, 'observation')],
         },

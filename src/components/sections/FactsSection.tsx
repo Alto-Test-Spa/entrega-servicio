@@ -9,7 +9,7 @@ export function FactsSection({ section, ctx }: { section: FactsDef; ctx: RenderC
   const { readOnly } = ctx
   return (
     <>
-      <dl className="facts">
+      <dl className="spec">
         {section.facts.map((f, i) => {
           const key = keys.fact(section.id, i)
           return (
@@ -20,8 +20,8 @@ export function FactsSection({ section, ctx }: { section: FactsDef; ctx: RenderC
           )
         })}
       </dl>
-      <h4>Conclusión</h4>
-      <p>
+      <div className="callout">
+        <h4>Conclusión</h4>
         <EditableText
           value={valueOf(ctx, keys.conclusion(section.id), '')}
           onChange={(v) => setValue(ctx, keys.conclusion(section.id), v)}
@@ -29,7 +29,7 @@ export function FactsSection({ section, ctx }: { section: FactsDef; ctx: RenderC
           multiline
           readOnly={readOnly}
         />
-      </p>
+      </div>
     </>
   )
 }

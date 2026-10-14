@@ -1,16 +1,8 @@
-import type { AccessMode } from '../types'
-
-export type NormStatus = 'validated' | 'to_validate'
-
-export interface NormativeItem {
-  id: string // estable, para no duplicar una norma que viene del servicio y del bloque de altura
-  text: string
-  status: NormStatus
-}
-
 export interface TableColumn {
   label: string
   width?: string // p. ej. '12%'
+  derive?: 'dueDate' // columna calculada (no editable): mes y año del hito de la primera columna, desde la fecha de ejecución
+  example?: string // ayuda de pantalla en la celda vacía («Ej. …»); no es contenido del documento
 }
 
 export interface FactItem {
@@ -20,10 +12,14 @@ export interface FactItem {
   validity?: boolean // texto con una fecha de vigencia que se compara con la fecha de ejecución
 }
 
+export type AnnexDelivery = 'included' | 'separate' // en este informe / documento aparte
+
 export interface AnnexDef {
   letter: string
   title: string
   hasValidity: boolean
+  delivery: AnnexDelivery
+  defaultValidity?: string // p. ej. una referencia fija del documento; admite quedar vacío
 }
 
 export type SectionGroup = 'common' | 'service' | 'closing'
@@ -38,14 +34,12 @@ interface SectionBase {
 export type SectionDef = SectionBase &
   (
     | { kind: 'identification' }
-    | { kind: 'normative' }
-    | { kind: 'table'; columns: TableColumn[]; rows: string[][] }
+    | { kind: 'table'; columns: TableColumn[]; rows: string[][]; note?: string; noteLabel?: string; notePlain?: boolean }
     | { kind: 'facts'; facts: FactItem[]; conclusionHint: string }
     | { kind: 'layout'; instruction: string; legend: string }
     | { kind: 'photos' }
     | { kind: 'annexes'; annexes: AnnexDef[] }
     | { kind: 'findings' }
-    | { kind: 'issuance' }
   )
 
 export type SectionKind = SectionDef['kind']
@@ -54,9 +48,7 @@ export interface ServiceDefinition {
   id: string
   label: string
   codePrefix: string // p. ej. 'AT-R-ANC'
-  defaultAccessMode: AccessMode
   title: string
   intro: string // admite {{variables}}
-  normative: NormativeItem[]
   sections: SectionDef[] // en orden de documento
 }

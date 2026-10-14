@@ -1,4 +1,5 @@
 import type { SharedData } from '../types'
+import type { ReportSummary } from './api'
 
 type Linked = Partial<Pick<SharedData, 'client' | 'asset' | 'address' | 'contact'>>
 
@@ -24,13 +25,55 @@ export function fromSurvey(doc: unknown): Linked {
   return pick([['client', str(d.clientName)], ['asset', str(d.clientAsset)], ['contact', str(d.clientContact)]])
 }
 
-// Rellena solo lo que está vacío (lo escrito a mano manda). La primera fuente tiene prioridad.
-export function mergeLinked(shared: SharedData, ...sources: Linked[]): SharedData {
-  const merged = { ...shared }
-  for (const source of sources) {
-    for (const key of ['client', 'asset', 'address', 'contact'] as const) {
-      if (merged[key].trim() === '' && source[key]) merged[key] = source[key]!
-    }
+export type Autofill = Partial<Record<keyof Linked, string>>
+export const LINKED_KEYS = ['client', 'asset', 'address', 'contact'] as const
+
+const isReplaceable = (shared: SharedData, autofill: Autofill, key: keyof Linked) =>
+  shared[key].trim() === '' || shared[key] === autofill[key]
+
+// Datos que `relink` va a mantener aunque el documento enlazado traiga otro valor (escritos a mano, o
+// de antes de que se registrara qué cargó cada enlace). La interfaz los avisa y ofrece reemplazarlos.
+export function linkConflicts(shared: SharedData, autofill: Autofill, ...sources: Linked[]): (keyof Linked)[] {
+  return LINKED_KEYS.filter((key) => {
+    const next = sources.map((s) => s[key]).find((v) => v !== undefined)
+    return next !== undefined && next !== shared[key] && !isReplaceable(shared, autofill, key)
+  })
+}
+
+// Reemplazo explícito (lo pidió la persona): pisa con lo que traen los documentos; lo que no traen se deja.
+export function forceRelink(shared: SharedData, autofill: Autofill, ...sources: Linked[]): { shared: SharedData; autofill: Autofill } {
+  const nextShared = { ...shared }
+  const nextFill: Autofill = { ...autofill }
+  for (const key of LINKED_KEYS) {
+    const next = sources.map((s) => s[key]).find((v) => v !== undefined)
+    if (next === undefined) continue
+    nextShared[key] = next
+    nextFill[key] = next
   }
-  return merged
+  return { shared: nextShared, autofill: nextFill }
+}
+
+// Recalcula los datos que vienen de los documentos enlazados. Por campo manda la primera fuente que lo
+// trae (cotización antes que levantamiento). Se reemplaza lo que estaba vacío o lo que cargó antes un
+// enlace (`autofill` recuerda qué se cargó); lo que la persona escribió o corrigió a mano no se toca.
+export function relink(shared: SharedData, autofill: Autofill, ...sources: Linked[]): { shared: SharedData; autofill: Autofill } {
+  const nextShared = { ...shared }
+  const nextFill: Autofill = { ...autofill }
+  for (const key of LINKED_KEYS) {
+    const next = sources.map((s) => s[key]).find((v) => v !== undefined) ?? ''
+    if (!isReplaceable(shared, autofill, key)) continue
+    nextShared[key] = next
+    if (next) nextFill[key] = next
+    else delete nextFill[key]
+  }
+  return { shared: nextShared, autofill: nextFill }
+}
+
+const norm = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
+
+// Los resúmenes de cotización y levantamiento llevan "Cliente — Activo" con el mismo formato.
+// Con una cotización elegida, solo se ofrecen los levantamientos de ese cliente y activo.
+export function surveysForQuote(quoteClient: string | undefined, surveys: ReportSummary[]): ReportSummary[] {
+  if (quoteClient === undefined) return surveys
+  return surveys.filter((r) => norm(r.client) === norm(quoteClient))
 }

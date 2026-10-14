@@ -1,6 +1,3 @@
-export type AccessMode = 'ground' | 'suspended_platform' | 'rope'
-export const ACCESS_MODES: AccessMode[] = ['ground', 'suspended_platform', 'rope']
-
 export type Severity = 'critical' | 'needs_action' | 'observation' | 'compliant'
 export const SEVERITY_LEVELS: { value: Severity; label: string }[] = [
   { value: 'critical', label: 'Crítico' },
@@ -39,18 +36,29 @@ export interface SharedData {
   issuerRole: string
 }
 
+// Fila editable de la sección Anexos (la letra A, B, C… sale de la posición).
+export interface AnnexRow {
+  title: string
+  hasValidity: boolean
+  validity: string
+  delivery?: 'included' | 'separate' // sin dato = incluido (informes guardados antes)
+}
+
 export type DocStatus = 'draft' | 'issued'
 
 export interface EntregaState {
   code: string
   serviceId: string
-  accessMode: AccessMode
   shared: SharedData
   hiddenSections: string[]
   // Texto editado de hechos, conclusión, leyenda, normativa y vigencias de anexos, por clave (lib/keys.ts)
   values: Record<string, string>
   // Filas de cada sección de tipo tabla, por id de sección (se copian de la definición al crear)
   tables: Record<string, string[][]>
+  // Anexos editados, por id de sección (se copian de la definición al primer cambio).
+  annexes?: Record<string, AnnexRow[]>
+  // Lo último que cargaron los documentos enlazados en cada dato único: distingue lo cargado de lo escrito a mano.
+  linkedFill?: Partial<Record<'client' | 'asset' | 'address' | 'contact', string>>
   coverPhoto?: string
   coverVeil: number // 0–100
   photos: PhotoItem[] // registro fotográfico del servicio ejecutado, máx. 6

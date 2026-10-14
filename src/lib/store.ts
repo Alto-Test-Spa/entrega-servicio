@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { AccessMode, EntregaState } from '../types'
+import type { EntregaState } from '../types'
 import { initialState, normalizeState } from './template'
 import { applyEdit } from './issuance'
 import { fetchReport, saveReport, ApiError } from './api'
@@ -115,9 +115,8 @@ export function useEntregaStore(onAuthExpired: () => void) {
     setState((prev) => (prev ? applyEdit(prev, fn(prev)) : prev))
   }
 
-  function startReport(serviceId: string, accessMode?: AccessMode) {
-    const s = initialState(serviceId)
-    const fresh = accessMode ? { ...s, accessMode } : s
+  function startReport(serviceId: string) {
+    const fresh = initialState(serviceId)
     pristine.current = fresh
     hadMirrorOnBoot.current = false
     lastSaved.current = ''

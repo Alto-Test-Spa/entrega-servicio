@@ -12,7 +12,8 @@ errors = []
 def squash(s):
     # NFKC deshace ligaduras (ﬁ → fi); sin espacios para tolerar cortes de línea dentro de una palabra;
     # en minúsculas porque el CSS usa text-transform: uppercase y el PDF trae el texto ya transformado.
-    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", s)).lower()
+    # Sin guiones: el texto va justificado con separación silábica (hyphens: auto) y el PDF trae el guion del corte.
+    return re.sub(r"[\s\-\u00ad\u2010]+", "", unicodedata.normalize("NFKC", s)).lower()
 
 FOOTER = re.compile(r"ALTO\s*TEST\s*·\s*EN-\d{8}-\d{6}|Página\s*\d+\s*de\s*\d+")
 pages = [(p.extract_text() or "") for p in reader.pages]

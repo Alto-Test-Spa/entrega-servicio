@@ -83,6 +83,11 @@ export async function fetchLinked(kind: 'informe' | 'economica', code: string): 
   return envelope.doc
 }
 
+// Lista los documentos de otra app de la familia (para elegir uno en vez de escribir su código).
+export function listLinked(kind: 'informe' | 'economica'): Promise<ReportSummary[]> {
+  return request<ReportSummary[]>(`/reports/${kind}`)
+}
+
 export function toEnvelopeBody(state: EntregaState) {
   const client = [state.shared.client, state.shared.asset].filter(Boolean).join(' — ')
   return { code: state.code, client, date: state.shared.executionDate, doc: state }

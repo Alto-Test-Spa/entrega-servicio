@@ -89,13 +89,6 @@ describe('validate', () => {
     expect(msgs({ ...s, findings: [f(1), f(2)] }, 'block').some((m) => m.includes('hallazgos') && m.includes('máximo de 6 fotos'))).toBe(true)
   })
 
-  it('la normativa por validar avisa una sola vez, sin bloquear', () => {
-    const s = { ...valid(), accessMode: 'rope' as const }
-    const warns = msgs(s, 'warn').filter((m) => m.includes('por validar'))
-    expect(warns).toHaveLength(1)
-    expect(msgs(s, 'block').filter((m) => m.includes('por validar'))).toHaveLength(0)
-  })
-
   it('los datos opcionales (contacto, códigos enlazados) no bloquean', () => {
     const s = valid()
     expect(msgs({ ...s, shared: { ...s.shared, contact: '', quoteCode: '', surveyCode: '' } }, 'block')).toEqual([])
@@ -106,19 +99,7 @@ describe.each(SERVICE_LIST.map((d) => [d.id, d] as const))('servicio %s completo
   it('un documento completo no tiene bloqueos', () => {
     const s = fillTemplate(initialState(id, new Date(2026, 8, 17)), d)
     // El marcador del carro colgante es intencional: se prueba aparte.
-    const blocks = validate({ ...s, accessMode: 'ground' }, d).filter((i) => i.level === 'block')
+    const blocks = validate(s, d).filter((i) => i.level === 'block')
     expect(blocks).toEqual([])
-  })
-})
-
-describe('carro colgante', () => {
-  it('bloquea hasta reemplazar el N.º de serie del equipo', () => {
-    const glass = getService('glass')
-    const s = fillTemplate(initialState('glass', new Date(2026, 8, 17)), glass)
-    expect(s.accessMode).toBe('suspended_platform')
-    const issues = validate(s, glass)
-    expect(issues.some((i) => i.level === 'block' && i.message.includes('Texto de plantilla'))).toBe(true)
-    const fixed = { ...s, values: { ...s.values, 'equipment.fact3': 'Carro colgante · N.º de serie CC-204' } }
-    expect(validate(fixed, glass).filter((i) => i.level === 'block')).toEqual([])
   })
 })

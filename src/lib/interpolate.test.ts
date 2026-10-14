@@ -16,8 +16,7 @@ describe('interpolate', () => {
   it('un dato único vacío se reemplaza por texto vacío', () => {
     expect(interpolate('[{{asset}}]', { asset: '' })).toBe('[]')
   })
-  it('la lista de variables conocidas incluye las de modalidad', () => {
-    expect(KNOWN_VARS).toContain('accessEquipment')
+  it('la lista de variables conocidas incluye las de los datos únicos', () => {
     expect(KNOWN_VARS).toContain('executionDate')
   })
 })

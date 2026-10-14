@@ -4,8 +4,6 @@ import { getService } from './services'
 import { validate } from './lib/validate'
 import { issueReport } from './lib/issuance'
 import { toggleSection } from './lib/sections'
-import { ACCESS_MODE_LABEL } from './lib/access'
-import { ACCESS_MODES, type AccessMode } from './types'
 import { ServicePicker } from './components/ServicePicker'
 import { Toolbar } from './components/Toolbar'
 import { SidePanel } from './components/SidePanel'
@@ -39,7 +37,7 @@ export default function EntregaEditor({ onAuthExpired }: { onAuthExpired: () => 
   }, [code])
 
   if (booting) return <div className="boot-screen">Cargando…</div>
-  if (!state || !def) return <ServicePicker onStart={(id, mode) => startReport(id, mode)} />
+  if (!state || !def) return <ServicePicker onStart={(id) => startReport(id)} />
 
   return (
     <>
@@ -49,17 +47,8 @@ export default function EntregaEditor({ onAuthExpired }: { onAuthExpired: () => 
           <DataPanel
             state={state}
             onChange={(patch) => update((s) => ({ ...s, shared: { ...s.shared, ...patch } }))}
-            onMerge={(merge) => update((s) => ({ ...s, shared: merge(s.shared) }))}
+            onRelink={(fn) => update((s) => { const r = fn(s.shared, s.linkedFill ?? {}); return { ...s, shared: r.shared, linkedFill: r.autofill } })}
           />
-          <section className="box" aria-labelledby="h-mod">
-            <h2 id="h-mod">Modalidad de acceso</h2>
-            <div className="seg">
-              {ACCESS_MODES.map((m: AccessMode) => (
-                <button key={m} type="button" aria-pressed={state.accessMode === m} onClick={() => update((s) => ({ ...s, accessMode: m }))}>{ACCESS_MODE_LABEL[m]}</button>
-              ))}
-            </div>
-            <p className="hint">Cambia el bloque de normativa y el equipo de acceso.</p>
-          </section>
           <CoverPanel state={state} onChange={(patch) => update((s) => ({ ...s, ...patch }))} />
           <SectionsPanel def={def} hidden={state.hiddenSections} onToggle={(id) => update((s) => ({ ...s, hiddenSections: toggleSection(s.hiddenSections, def, id) }))} />
         </SidePanel>

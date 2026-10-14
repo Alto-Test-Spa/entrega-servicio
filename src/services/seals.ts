@@ -1,8 +1,7 @@
 import {
-  SCOPE_COLUMNS, annexesSection, findingsSection, identificationSection, issuanceSection,
-  maintenanceSection, normativeSection, photosSection, scopeSection,
+  SCOPE_COLUMNS, annexesSection, findingsSection, identificationSection,
+  maintenanceSection, photosSection, scopeSection,
 } from './common'
-import { GENERAL_NORMATIVE } from './normative'
 import type { ServiceDefinition } from './types'
 
 // Borrador a validar por Alto Test. La duración de la prueba de riego NO se inventa: queda vacía
@@ -11,21 +10,11 @@ export const seals: ServiceDefinition = {
   id: 'seals',
   label: 'Reposición de sellos',
   codePrefix: 'AT-R-SEL',
-  defaultAccessMode: 'rope',
   title: 'Reposición de sellos de fachada',
   intro:
     'Registrar la reposición de sellos ejecutada en {{asset}}: ubicación, tipo de sellante, longitudes intervenidas y pruebas de estanqueidad posteriores.',
-  normative: [
-    ...GENERAL_NORMATIVE,
-    { id: 'astm-c920', text: 'ASTM C920 / ISO 11600 · Selladores elastoméricos para juntas de construcción', status: 'to_validate' },
-    { id: 'en-15651-2', text: 'EN 15651-2:2017 · Selladores de acristalamiento de uso no estructural', status: 'to_validate' },
-    { id: 'astm-c1193', text: 'ASTM C1193 · Guía para el uso de selladores de juntas', status: 'to_validate' },
-    { id: 'aama-501-2', text: 'AAMA 501.2 · Prueba de riego en terreno para muros cortina y fachadas', status: 'to_validate' },
-    { id: 'astm-c1521', text: 'ASTM C1521 · Evaluación de adherencia de selladores instalados', status: 'to_validate' },
-  ],
   sections: [
     identificationSection(),
-    normativeSection(),
     scopeSection(SCOPE_COLUMNS, [
       ['01', 'Retiro de sellos degradados en fachada', '', ''],
       ['02', 'Limpieza y preparación de juntas', '', ''],
@@ -33,7 +22,7 @@ export const seals: ServiceDefinition = {
     ]),
     {
       id: 'replaced', title: 'Sellos repuestos', group: 'service', kind: 'table',
-      columns: [{ label: 'Ubicación' }, { label: 'Tipo de sello', width: '26%' }, { label: 'Longitud', width: '14%' }, { label: 'Curado / control', width: '24%' }],
+      columns: [{ label: 'Ubicación', example: 'Junta vertical, cara norte, piso 5' }, { label: 'Tipo de sello', width: '26%', example: 'Silicona estructural' }, { label: 'Longitud', width: '14%', example: '12 m' }, { label: 'Curado / control', width: '24%', example: 'Revisado a las 24 h' }],
       rows: [['', '', '', '']],
     },
     {
@@ -52,10 +41,9 @@ export const seals: ServiceDefinition = {
       ['12 meses', 'Prueba de estanqueidad', 'Muestreo de juntas críticas.'],
     ]),
     annexesSection([
-      { letter: 'A', title: 'Ficha técnica y lote del sellante', hasValidity: true },
-      { letter: 'B', title: 'Garantía de aplicación', hasValidity: false },
+      { letter: 'A', title: 'Ficha técnica y lote del sellante', hasValidity: true, delivery: 'included' },
+      { letter: 'B', title: 'Garantía de aplicación', hasValidity: false, delivery: 'included' },
     ]),
     findingsSection(),
-    issuanceSection(),
   ],
 }

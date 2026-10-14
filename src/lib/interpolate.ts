@@ -1,9 +1,8 @@
 import type { EntregaState } from '../types'
-import { ACCESS_EQUIPMENT, ACCESS_MODE_LABEL } from './access'
 
 export const KNOWN_VARS = [
   'client', 'asset', 'address', 'contact', 'executionDate', 'quoteCode', 'surveyCode',
-  'issuerName', 'issuerRole', 'folio', 'accessMode', 'accessEquipment',
+  'issuerName', 'issuerRole', 'folio',
 ] as const
 export type KnownVar = (typeof KNOWN_VARS)[number]
 
@@ -25,7 +24,5 @@ export function buildContext(state: EntregaState): Record<KnownVar, string> {
     issuerName: s.issuerName,
     issuerRole: s.issuerRole,
     folio: state.code,
-    accessMode: ACCESS_MODE_LABEL[state.accessMode],
-    accessEquipment: ACCESS_EQUIPMENT[state.accessMode],
   }
 }
