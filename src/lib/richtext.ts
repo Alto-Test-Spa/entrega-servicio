@@ -7,7 +7,7 @@ const TAG_RE = /<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g
 const KEEP = new Set(['b', 'ul', 'ol', 'li'])
 const BLOCK_END = /(<br>|<\/li>|<\/ul>|<\/ol>)$/
 
-const escapeText = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const protect = (t: string) => t.replace(/&(?!(?:amp|lt|gt|quot|#39);)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 // Texto que viene de un HTML ya serializado: se respetan sus entidades y solo se protege lo suelto.
 const cleanSegment = (t: string) =>
   t.replace(/\r?\n/g, ' ').replace(/&nbsp;/g, ' ').replace(/&(?!(?:amp|lt|gt|quot|#39);)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -15,7 +15,8 @@ const cleanSegment = (t: string) =>
 export function sanitizeRich(input: string): string {
   if (!TAG_RE.test(input)) {
     TAG_RE.lastIndex = 0
-    return escapeText(input).replace(/\r?\n/g, '<br>').replace(/^(<br>)+|(<br>)+$/g, '')
+    // Sin etiquetas: texto plano antiguo, o texto ya serializado (con &amp;): no se escapa dos veces.
+    return protect(input.replace(/&nbsp;/g, ' ')).replace(/\r?\n/g, '<br>').replace(/^(<br>)+|(<br>)+$/g, '')
   }
   TAG_RE.lastIndex = 0
   let out = ''
@@ -55,8 +56,6 @@ const ENTITIES: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>
 
 // Lo que ve una persona al leerlo: sirve para saber si está vacío y para buscar marcadores.
 export function plainText(value: string): string {
-  if (!TAG_RE.test(value)) { TAG_RE.lastIndex = 0; return value }
-  TAG_RE.lastIndex = 0
   return value
     .replace(/<\/li>|<br\s*\/?>|<\/div>|<\/p>/gi, '\n')
     .replace(TAG_RE, '')

@@ -1,4 +1,3 @@
-import { interpolate } from '../../lib/interpolate'
 import { keys } from '../../lib/keys'
 import { nextIntervention } from '../../lib/summary'
 import { EditableText } from '../EditableText'
@@ -7,7 +6,7 @@ import { setValue, valueOf, type RenderCtx } from './ctx'
 // Los datos únicos se editan en el panel lateral; acá solo se muestran. Orden pensado para quien lee:
 // primero el resultado y las cifras, luego la ficha de datos y, al final, el objetivo.
 export function IdentificationSection({ ctx }: { ctx: RenderCtx }) {
-  const { state, def, vars, readOnly } = ctx
+  const { state, def, readOnly } = ctx
   const s = state.shared
   const next = nextIntervention(state, def)
   const [nextWhen, ...nextWhat] = next.split(' · ')
@@ -49,7 +48,9 @@ export function IdentificationSection({ ctx }: { ctx: RenderCtx }) {
       </dl>
 
       <h4>Objetivo</h4>
-      <p className="lead">{interpolate(def.intro, vars)}</p>
+      <div className="lead">
+        <EditableText value={valueOf(ctx, keys.objective, def.intro)} onChange={(v) => setValue(ctx, keys.objective, v)} multiline placeholder="Objetivo del informe" readOnly={readOnly} />
+      </div>
     </>
   )
 }

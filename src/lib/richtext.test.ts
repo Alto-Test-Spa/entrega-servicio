@@ -33,3 +33,16 @@ describe('plainText', () => {
     expect(plainText('<br>').trim()).toBe('')
   })
 })
+
+describe('texto ya serializado (editor)', () => {
+  it('no escapa dos veces ni deja &nbsp; visibles', () => {
+    expect(sanitizeRich('marco&nbsp;PVC')).toBe('marco PVC')
+    expect(sanitizeRich('A &amp; B')).toBe('A &amp; B')
+    expect(sanitizeRich(sanitizeRich('A & B'))).toBe('A &amp; B')
+    expect(plainText('A &amp; B')).toBe('A & B')
+  })
+  it('un párrafo vacío entre dos párrafos es una línea en blanco', () => {
+    expect(sanitizeRich('<p>a</p><p><br></p><p>b</p>')).toBe('a<br><br>b')
+    expect(sanitizeRich('<p>a</p><p>b</p>')).toBe('a<br>b')
+  })
+})

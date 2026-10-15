@@ -34,7 +34,7 @@ export function effectiveValue(state: EntregaState, key: string, fallback: strin
 
 const writeValue = (key: string) => (s: EntregaState, v: string): EntregaState => ({ ...s, values: { ...s.values, [key]: v } })
 
-function sectionFields(section: SectionDef, state: EntregaState, ctx: Record<string, string>): Field[] {
+function sectionFields(section: SectionDef, state: EntregaState, ctx: Record<string, string>, intro: string): Field[] {
   const base = { sectionId: section.id }
   const val = (key: string, fallback: string) => effectiveValue(state, key, fallback, ctx)
   switch (section.kind) {
@@ -44,6 +44,7 @@ function sectionFields(section: SectionDef, state: EntregaState, ctx: Record<str
           ...base, label, value: state.shared[key], required, validity: false,
           write: (s, v) => ({ ...s, shared: { ...s.shared, [key]: v } }),
         })),
+        { ...base, label: 'Objetivo', value: val(keys.objective, intro), required: true, validity: false, write: writeValue(keys.objective) },
         { ...base, label: 'Resumen del resultado', value: val(keys.summary, ''), required: true, validity: false, write: writeValue(keys.summary) },
       ]
     case 'table': {
@@ -103,5 +104,5 @@ function sectionFields(section: SectionDef, state: EntregaState, ctx: Record<str
 // Todo lo editable de las secciones VISIBLES. Lo oculto no se valida ni cuenta.
 export function collectFields(state: EntregaState, def: ServiceDefinition): Field[] {
   const ctx = buildContext(state)
-  return activeSections(def, state.hiddenSections).flatMap(({ section }) => sectionFields(section, state, ctx))
+  return activeSections(def, state.hiddenSections).flatMap(({ section }) => sectionFields(section, state, ctx, def.intro))
 }

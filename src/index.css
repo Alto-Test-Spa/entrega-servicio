@@ -357,6 +357,11 @@
   .editable--block { display: block; }
   /* Con formato: el HTML manda, no los saltos de línea del texto. */
   .editable--rich { white-space: normal; }
+  .editable--rich .ProseMirror { position: static !important; outline: none; white-space: normal !important; overflow-wrap: anywhere; }
+  .editable--rich .ProseMirror p { margin: 0; min-height: 1.2em; }
+  .editable--rich .ProseMirror p.is-editor-empty:first-child::before { content: attr(data-placeholder); float: left; height: 0; pointer-events: none; color: var(--color-signal); font-family: var(--font-mono); font-size: 10px; }
+  .editable--rich:focus-within { background: rgb(194 73 31 / 10%); box-shadow: inset 2px 0 0 var(--color-signal); }
+  .editable--rich strong, .editable--rich b { font-weight: 700; }
   .editable--rich ul, .editable--rich ol { margin: 2px 0; padding-left: 1.4em; }
   .editable--rich ul { list-style: disc; }
   .editable--rich ol { list-style: decimal; }
@@ -365,9 +370,12 @@
 
   /* Barra de formato mientras se edita un texto con formato. */
   .format-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: flex; gap: 6px; align-items: center; padding: 6px 8px; background: var(--color-ink); color: #fff; box-shadow: 0 8px 24px -8px rgb(0 0 0 / 50%); }
-  .format-bar button { font: 500 12px var(--font-mono); color: #fff; background: transparent; border: 1px solid rgb(255 255 255 / 35%); padding: 3px 9px; cursor: pointer; }
-  .format-bar button:hover { background: rgb(255 255 255 / 15%); }
-  .format-hint { font: 400 10px var(--font-mono); color: rgb(255 255 255 / 65%); margin-left: 6px; }
+  .format-bar button { white-space: nowrap; font: 500 12px var(--font-mono); color: #fff; background: transparent; border: 1px solid rgb(255 255 255 / 35%); padding: 3px 9px; cursor: pointer; }
+  .format-bar button:hover:not(:disabled) { background: rgb(255 255 255 / 15%); }
+  .format-bar button.is-on { background: var(--color-signal); border-color: var(--color-signal); }
+  .format-bar button:disabled { opacity: 0.35; cursor: default; }
+  .format-sep { width: 1px; align-self: stretch; background: rgb(255 255 255 / 25%); margin: 0 2px; }
+  .format-hint { white-space: nowrap; font: 400 10px var(--font-mono); color: rgb(255 255 255 / 65%); margin-left: 6px; }
 
   /* ═════════════════ Editor ═════════════════ */
   .editor-layout { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 20px; align-items: start; padding: 16px; }
@@ -452,7 +460,7 @@
   table.t { width: 100%; border-collapse: collapse; }
   table.t--fixed { table-layout: fixed; }
   table.t th { font: 500 9.5px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-steel); text-align: left; border-bottom: 1.5px solid var(--color-ink); padding: 6px 8px 6px 0; }
-  table.t td { border-bottom: 1px solid #c9cfcc; padding: 7px 8px 7px 0; vertical-align: top; overflow-wrap: anywhere; }
+  table.t td { text-align: left; border-bottom: 1px solid #c9cfcc; padding: 7px 8px 7px 0; vertical-align: top; overflow-wrap: anywhere; }
   .row-remove { border: 0; background: transparent; cursor: pointer; color: var(--color-steel); font-size: 16px; }
   .toc { list-style: none; margin: 0; padding: 0; }
   .toc li { display: grid; grid-template-columns: 3ch minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; border-bottom: 1px dotted var(--color-steel-pale); align-items: baseline; }
@@ -541,7 +549,7 @@ body { overflow-wrap: anywhere; }
   .doc { display: block; }
   .sheet { display: block; width: auto; max-width: none; min-height: 0; box-shadow: none; background: #fff; font-size: 12px; break-before: page; }
   .sheet-body { padding: 0; }
-  .editable:hover, .editable:focus { background: none; box-shadow: none; }
+  .editable:hover, .editable:focus, .editable--rich:focus-within { background: none; box-shadow: none; }
   .photos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sheet-title { break-after: avoid; }
   .sec-eyebrow, .sheet h4 { break-after: avoid; }

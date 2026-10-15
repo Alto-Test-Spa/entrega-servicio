@@ -23,11 +23,11 @@ export const glass: ServiceDefinition = {
     {
       id: 'sectors', title: 'Sectores intervenidos', group: 'service', kind: 'table',
       columns: [
-        { label: 'Sector / fachada', example: 'Cara poniente' },
-        { label: 'Desde', width: '15%', example: 'Azotea' },
-        { label: 'Hasta', width: '15%', example: 'Piso 1' },
-        { label: 'Superficie', width: '17%', example: 'Cristal' },
-        { label: 'Observaciones', width: '24%', example: 'Sin novedades' },
+        { label: 'Sector / fachada', width: '20%', example: 'Cara poniente' },
+        { label: 'Desde', width: '11%', example: 'Azotea' },
+        { label: 'Hasta', width: '11%', example: 'Piso 1' },
+        { label: 'Superficie', width: '22%', example: 'Cristal' },
+        { label: 'Observaciones', example: 'Sin novedades' },
       ],
       rows: [['', '', '', '', '']],
       // Sin texto base: cómo quedó el trabajo lo escribe quien lo ejecutó.
