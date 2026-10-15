@@ -30,6 +30,11 @@ Si un servicio necesita un tipo de sección nuevo: el tipo en `services/types.ts
 
 - **Contenido de entrega pensado para varios lectores** (2026-10-13, Matías): gerente de administración, jefe de operaciones, prevención e instalación. Se sumaron: «Resumen del resultado» (texto + cifras de hallazgos y próxima intervención) en Identificación; «Componentes instalados» (tabla) en anclajes; «Observaciones de ejecución» (tabla, ocultable si no hubo desviaciones) en anclajes; el plan de mantención calcula la «Fecha estimada» desde la fecha de ejecución (`dueLabel` en `lib/date.ts`; columna `derive: 'dueDate'`) y lleva la nota de inspección extraordinaria y ciclo posterior; «Anexos» pasó a «Documentos de respaldo» con columna Entrega (incluido en este informe / aparte). Quedaron fuera a propósito: metodología y trabajos ejecutados en texto (van en la propuesta técnica), las imágenes de fichas y certificados, y un registro por punto.
 
+- **Flexibilidad del registro** (2026-10-14/15, Matías): muchas veces no se lleva un registro exacto, así que casi todo se puede ocultar, renombrar o dejar vacío. Títulos de sección y encabezados de tabla son renombrables por informe (`lib/overrides.ts`, claves `keys.title/column` en `values`); `TableColumn.optional` y `noteOptional` dejan celdas/nota sin bloquear (sellos: solo el sector es obligatorio; vidrios: observaciones y condición final opcionales); la descripción de las fotos del registro es opcional. Aún no se pueden agregar/quitar columnas.
+- **Lenguaje de administración de edificios en Chile** (Camilo): no usar «estanqueidad» (sellos: «Verificación de filtraciones»), ni «as-built» (no se entregan planos: «Layout de puntos»); «Aparte» se dice «Independiente». Las etiquetas de grupo (Común / Propia del servicio / Cierre) son internas: solo en el panel lateral, nunca en el índice ni en el PDF.
+- **La portada muestra de qué cotización y levantamiento viene el informe** (si están enlazados); así el folio queda asociado sin base de datos propia (Camilo, 2026-10-14).
+- Pantalla de inicio: botón «Historial» junto a «Crear informe» para abrir un informe guardado sin crear uno. «Marcar como emitido» (antes «Emitir informe») solo pone el sello EMITIDO · REV. 0; imprimir/PDF sirve siempre (borrador sale con sello BORRADOR).
+
 ## Invariantes
 1. `lib/sections.ts` es el único lugar que numera secciones.
 2. Todo texto editable usa `EditableText` (`.editable`, `overflow-wrap: anywhere`). **Una sola cadena larga sin espacios puede encoger todo el PDF** si el documento se ensancha (probado: ~50 %). La compuerta de `scrollWidth` lo vigila.
@@ -47,5 +52,5 @@ El pie «Página n de N» usa cajas de margen de `@page` (Chrome/Edge recientes;
 ## Pendientes conocidos
 - Contenido de vidrios y sellos (secciones, textos, plan de mantención): borrador. Modalidad por defecto por servicio (piso / carro colgante / cuerdas) es una suposición.
 - Cargo de quien emite (`DEFAULT_ISSUER` en `services/common.ts`): el Dossier de Ranco traía dos cargos distintos.
-- Sin probar contra el Worker real ni con una foto real de portada (solo fixtures); falta ajustar el velo por defecto con una foto de Ranco.
-- Despliegue: repo en GitHub y proyecto en Vercel con `VITE_REPORTS_ENDPOINT` (pendiente de confirmación de Matías).
+- Foto real de portada (velo por defecto) sin ajustar con una foto de Ranco.
+- **Desplegado** (2026-10-15): repo `Alto-Test-Spa/entrega-servicio` (rama `main`) → Vercel (Vite, `VITE_REPORTS_ENDPOINT=https://altotest-documentos.altotest.workers.dev`). Camilo lo está probando en producción; guardado, historial y enlaces a cotización/levantamiento ya se usan contra el Worker real. La clave de acceso es la `ACCESS_KEY` de producción del Worker, no la de `.dev.vars`.
