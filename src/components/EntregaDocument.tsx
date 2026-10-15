@@ -24,7 +24,7 @@ export function EntregaDocument({ state, def: baseDef, readOnly = false, update 
   return (
     <div className="doc" data-folio={state.code}>
       <PrintStyles code={state.code} />
-      <Cover state={state} def={def} />
+      <Cover state={state} def={def} ctx={ctx} />
       <TableOfContents sections={sections} />
       {sections.map((n) => (
         <SectionSheet key={n.section.id} numbered={n} ctx={ctx} baseTitle={baseDef.sections.find((x) => x.id === n.section.id)?.title ?? ''}>

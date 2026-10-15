@@ -5,6 +5,8 @@ export const keys = {
   title: (sectionId: string) => `${sectionId}.title`,
   column: (sectionId: string, index: number) => `${sectionId}.col${index}`,
   objective: 'identification.objective',
+  coverEyebrow: 'cover.eyebrow',
+  coverTitle: 'cover.title',
   summary: 'identification.summary',
   note: (sectionId: string) => `${sectionId}.note`,
   legend: (sectionId: string) => `${sectionId}.legend`,
