@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { SERVICE_LIST } from '../services'
+import type { EntregaState } from '../types'
+import { HistoryMenu } from './HistoryMenu'
 import { Wordmark } from './Wordmark'
 
 interface Props {
   onStart: (serviceId: string) => void
+  onLoad: (report: EntregaState) => void // abrir un informe ya guardado, sin crear uno nuevo
 }
 
 // El tipo de servicio se elige al inicio y precarga las secciones, los textos base y los campos
 // propios.
-export function ServicePicker({ onStart }: Props) {
+export function ServicePicker({ onStart, onLoad }: Props) {
   const [serviceId, setServiceId] = useState(SERVICE_LIST[0].id)
 
   return (
@@ -25,7 +28,11 @@ export function ServicePicker({ onStart }: Props) {
           </button>
         ))}
       </div>
-      <button type="button" className="toolbar-btn" onClick={() => onStart(serviceId)}>Crear informe</button>
+      <div className="picker-actions">
+        <button type="button" className="toolbar-btn" onClick={() => onStart(serviceId)}>Crear informe</button>
+        <span className="hint">o</span>
+        <HistoryMenu currentCode="" onOpen={onLoad} />
+      </div>
     </main>
   )
 }

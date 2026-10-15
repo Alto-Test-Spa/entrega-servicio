@@ -37,7 +37,7 @@ export default function EntregaEditor({ onAuthExpired }: { onAuthExpired: () => 
   }, [code])
 
   if (booting) return <div className="boot-screen">Cargando…</div>
-  if (!state || !def) return <ServicePicker onStart={(id) => startReport(id)} />
+  if (!state || !def) return <ServicePicker onStart={(id) => startReport(id)} onLoad={loadReport} />
 
   return (
     <>
