@@ -27,13 +27,17 @@ export function validate(state: EntregaState, def: ServiceDefinition): Issue[] {
   const fields = collectFields(state, def)
 
   // 1. Obligatorios vacíos: un aviso por dato único; los demás se agrupan por sección.
-  const emptyBySection = new Map<string, number>()
+  const emptyBySection = new Map<string, string[]>()
   for (const f of fields) {
     if (!f.required || plainText(f.value).trim() !== '') continue
     if (f.sectionId === 'identification') issues.push({ level: 'block', message: `Falta ${f.label}`, sectionId: 'identification' })
-    else emptyBySection.set(f.sectionId, (emptyBySection.get(f.sectionId) ?? 0) + 1)
+    else emptyBySection.set(f.sectionId, [...(emptyBySection.get(f.sectionId) ?? []), f.label])
   }
-  for (const [id, n] of emptyBySection) issues.push({ level: 'block', message: `${n} campo(s) vacío(s) en «${titleOf(id)}»`, sectionId: id })
+  for (const [id, labels] of emptyBySection) {
+    // Se nombran los primeros campos para que se encuentre cuál falta sin recorrer todo el documento.
+    const shown = labels.slice(0, 3).join(', ') + (labels.length > 3 ? ` y ${labels.length - 3} más` : '')
+    issues.push({ level: 'block', message: `${labels.length} campo(s) vacío(s) en «${titleOf(id)}»: ${shown}`, sectionId: id })
+  }
 
   // 2. Texto de plantilla sin reemplazar: el primero de cada sección.
   const seen = new Set<string>()

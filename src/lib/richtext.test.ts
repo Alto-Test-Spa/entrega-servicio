@@ -35,6 +35,9 @@ describe('plainText', () => {
 })
 
 describe('texto ya serializado (editor)', () => {
+  it('limpia el «&amp;nbsp;» que dejó el editor antiguo', () => {
+    expect(sanitizeRich('Ventanas con marco&amp;nbsp;PVC')).toBe('Ventanas con marco PVC')
+  })
   it('no escapa dos veces ni deja &nbsp; visibles', () => {
     expect(sanitizeRich('marco&nbsp;PVC')).toBe('marco PVC')
     expect(sanitizeRich('A &amp; B')).toBe('A &amp; B')

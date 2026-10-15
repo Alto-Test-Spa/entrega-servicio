@@ -27,11 +27,11 @@ export const glass: ServiceDefinition = {
         { label: 'Desde', width: '11%', example: 'Azotea' },
         { label: 'Hasta', width: '11%', example: 'Piso 1' },
         { label: 'Superficie', width: '22%', example: 'Cristal' },
-        { label: 'Observaciones', example: 'Sin novedades' },
+        { label: 'Observaciones', optional: true, example: 'Sin novedades' },
       ],
       rows: [['', '', '', '', '']],
       // Sin texto base: cómo quedó el trabajo lo escribe quien lo ejecutó.
-      note: '', noteLabel: 'Condición final del trabajo',
+      note: '', noteLabel: 'Condición final del trabajo', noteOptional: true,
     },
     photosSection(),
     maintenanceSection([

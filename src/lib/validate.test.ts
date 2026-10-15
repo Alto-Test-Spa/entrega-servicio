@@ -73,9 +73,17 @@ describe('validate', () => {
     expect(() => validate(bad, def)).not.toThrow()
   })
 
-  it('bloquea una foto sin descripción y más de 6 fotos', () => {
+  it('una foto del registro sin descripción no bloquea; la de un hallazgo sí, y el aviso nombra el campo', () => {
     const s = valid()
-    expect(msgs({ ...s, photos: [newPhoto('data:x')] }, 'block').some((m) => m.includes('vacío'))).toBe(true)
+    expect(msgs({ ...s, photos: [newPhoto('data:x')] }, 'block')).toEqual([])
+    const f = { id: '1', location: 'a', description: '', recommendation: 'c', severity: 'observation' as const, immediateRisk: false, commercialOpportunity: false, photos: [newPhoto('data:y')] }
+    const m = msgs({ ...s, findings: [f] }, 'block').join(' | ')
+    expect(m).toContain('Hallazgo 1 · descripción')
+    expect(m).toContain('Hallazgo 1 · foto 1')
+  })
+
+  it('más de 6 fotos bloquea', () => {
+    const s = valid()
     const seven = Array.from({ length: 7 }, (_, i) => photoWithCaption(`f${i}`))
     expect(msgs({ ...s, photos: seven }, 'block').some((m) => m.includes('máximo de 6 fotos'))).toBe(true)
   })

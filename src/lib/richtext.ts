@@ -12,7 +12,9 @@ const protect = (t: string) => t.replace(/&(?!(?:amp|lt|gt|quot|#39);)/g, '&amp;
 const cleanSegment = (t: string) =>
   t.replace(/\r?\n/g, ' ').replace(/&nbsp;/g, ' ').replace(/&(?!(?:amp|lt|gt|quot|#39);)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-export function sanitizeRich(input: string): string {
+export function sanitizeRich(rawInput: string): string {
+  // El editor antiguo guardó «&nbsp;» escapado dos veces: se limpia al leer.
+  const input = rawInput.replace(/&amp;nbsp;/g, ' ')
   if (!TAG_RE.test(input)) {
     TAG_RE.lastIndex = 0
     // Sin etiquetas: texto plano antiguo, o texto ya serializado (con &amp;): no se escapa dos veces.

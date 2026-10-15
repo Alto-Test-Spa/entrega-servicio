@@ -74,7 +74,7 @@ function sectionFields(section: SectionDef, state: EntregaState, ctx: Record<str
       return [{ ...base, label: 'Leyenda del plano', value: val(keys.legend(section.id), section.legend), required: true, validity: false, write: writeValue(keys.legend(section.id)) }]
     case 'photos':
       return state.photos.map((p, i) => ({
-        ...base, label: `Foto ${i + 1}`, value: p.caption, required: true, validity: false,
+        ...base, label: `Foto ${i + 1}`, value: p.caption, required: false, validity: false,
         write: (s, v) => ({ ...s, photos: s.photos.map((pp, pi) => (pi === i ? { ...pp, caption: v } : pp)) }),
       }))
     case 'annexes':
